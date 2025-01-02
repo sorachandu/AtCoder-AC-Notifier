@@ -13,9 +13,12 @@ def get_atcoder_rating(username):
     # BeautifulSoupでHTMLを解析
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    img_list = soup.find_all("img",class_="user-rating-stage-m")
-    rating = img_list[0].find_parent("td").find("span").text
-    highest = img_list[1].find_parent("td").find("span").text
+    try:
+        img_list = soup.find_all("img",class_="user-rating-stage-m")
+        rating = img_list[0].find_parent("td").find("span").text
+        highest = img_list[1].find_parent("td").find("span").text
+    except:
+        return None
 
     return rating,highest
 
