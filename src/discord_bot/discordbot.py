@@ -1,7 +1,7 @@
 import discord
 import discord.app_commands
 import os
-from get_info.get_atcoder_rating import get_atcoder_rating
+from ..get_info.get_atcoder_rating import get_atcoder_rating
 
 intents = discord.Intents.default()
 intents.message_content = True  # これが必要
@@ -13,19 +13,19 @@ tree = discord.app_commands.CommandTree(client) #←ココ
 @discord.app_commands.describe(username="atcoderのusername")
 async def rating_command(ctx,username:str):
     info = get_atcoder_rating(username)
-    if info:
-        await ctx.response.send_message(f"{info[2]}のratingは{info[0]}です")
+    if type(info) == str:
+        await ctx.response.send_message(info)
     else:
-        await ctx.response.send_message("error")
+        await ctx.response.send_message(f"{info[2]}のratingは{info[0]}です")
 
 @tree.command(name="highest", description="atcoderのhighestを答えます")
 @discord.app_commands.describe(username="atcoderのusername")
 async def rating_command(ctx,username:str):
     info = get_atcoder_rating(username)
-    if info:
-        await ctx.response.send_message(f"{info[2]}のhighestは{info[1]}です")
+    if type(info) == str:
+        await ctx.response.send_message(info)
     else:
-        await ctx.response.send_message("error")
+        await ctx.response.send_message(f"{info[2]}のhighestは{info[1]}です")
 
     
 

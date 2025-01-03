@@ -8,18 +8,17 @@ def get_atcoder_rating(username):
     # リクエストを送信してHTMLを取得
     response = requests.get(url)
     if response.status_code != 200:
-        return None
+        return "通信に失敗したか、存在しないユーザーです"
 
     # BeautifulSoupでHTMLを解析
     soup = BeautifulSoup(response.text, 'html.parser')
 
     try:
-        img_list = soup.find_all("img",class_="user-rating-stage-m")
-        rating = img_list[0].find_parent("td").find("span").text
-        highest = img_list[1].find_parent("td").find("span").text
+        rating = soup.find("th",class_ = "no-break", text = "Rating").find_parent("tr").find("td").find("span").text
+        highest = soup.find("th",class_ = "no-break", text = "Highest Rating").find_parent("tr").find("td").find("span").text
         username = soup.find("a",class_="username").find("span").text
     except:
-        return None
+        return "atcoderのユーザーページの解析でエラーが発生しました"
 
     return rating,highest,username
 
