@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-def get_atcoder_rating(username):
+def get_atcoder_info(username):
     # AtCoderのユーザープロフィールページのURL
     url = f'https://atcoder.jp/users/{username}'
 
@@ -14,14 +14,32 @@ def get_atcoder_rating(username):
     soup = BeautifulSoup(response.text, 'html.parser')
 
     try:
-        rating = soup.find("th",class_ = "no-break", text = "Rating").find_parent("tr").find("td").find("span").text
-        highest = soup.find("th",class_ = "no-break", text = "Highest Rating").find_parent("tr").find("td").find("span").text
+        rating = soup.find("th",class_ = "no-break", string = "Rating").find_parent("tr").find("td").find("span").string
+        highest = soup.find("th",class_ = "no-break", string = "Highest Rating").find_parent("tr").find("td").find("span").string
         username = soup.find("a",class_="username").find("span").text
     except:
         return "atcoderのユーザーページの解析でエラーが発生しました"
 
     return rating,highest,username
 
+
+def get_atcoder_username(username):
+    info = get_atcoder_info(username)
+    if type(info) == tuple and len(info) == 3:
+        return info[2]
+    return None
+
+def get_atcoder_rating(username):
+    info = get_atcoder_info(username)
+    if type(info) == tuple and len(info) == 3:
+        return info[0]
+    return None
+
+def get_atcoder_highest(username):
+    info = get_atcoder_info(username)
+    if type(info) == tuple and len(info) == 3:
+        return info[1]
+    return None
 
 # 使用例
 username = 'noshinn'  # ここにAtCoderのユーザー名を入力

@@ -25,7 +25,7 @@ def get_problems():
                 diff = round( 400 / math.exp((400-diff)/400) )
             experimental = json_data[i]["is_experimental"]
         else:
-            diff = 0
+            diff = -1
             experimental = False
         
         if "title" in json_data[i]:
@@ -39,7 +39,6 @@ def get_problems():
     
     write_all_problems(problems)
     add_problems_name()
-    write_all_problems(problems)
 
 def write_all_problems(problems):
     path = get_path()
@@ -63,7 +62,9 @@ def add_problems_name():
     for i in json_data:
         problem_id = i["id"]
         problem_name = i["name"]
+        contest_id = i["contest_id"]
         if problem_id in problems:
             problems[problem_id]["title"] = problem_name
+            problems[problem_id]["contest_id"] = contest_id
     write_all_problems(problems) 
 
