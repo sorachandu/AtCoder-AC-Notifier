@@ -23,10 +23,23 @@ def get_problems():
             diff = json_data[i]["difficulty"]
             if diff < 400:
                 diff = round( 400 / math.exp((400-diff)/400) )
-            problems[i] = [diff, json_data[i]["is_experimental"]]
+            experimental = json_data[i]["is_experimental"]
         else:
-            problems[i] = [0,False]
-    return problems
+            diff = 0
+            experimental = False
+        
+        if "title" in json_data[i]:
+            title = json_data[i]["title"]
+        else:
+            title = ""
+        problems[i] = dict()
+        problems[i]["difficulty"] = diff
+        problems[i]["is_experimental"] = experimental
+        problems[i]["title"] = title
+    
+    write_all_problems(problems)
+    add_problems_name()
+    write_all_problems(problems)
 
 def write_all_problems(problems):
     path = get_path()
@@ -37,7 +50,20 @@ def write_all_problems(problems):
 def read_all_problems():
     path = get_path()
     with open(path) as f:
-        ans=f.read()
+        ans = json.load(f)
     return ans
 
-#write_all_problems(get_problems())
+def add_problems_name():
+    problems = read_all_problems()
+    api_path = "https://kenkoooo.com/atcoder/resources/problems.json"
+    response = requests.get(api_path)
+    if response.status_code != 200:
+        return "通信エラーが発生しました"
+    json_data = response.json()
+    for i in json_data:
+        problem_id = i["id"]
+        problem_name = i["name"]
+        if problem_id in problems:
+            problems[problem_id]["title"] = problem_name
+    write_all_problems(problems) 
+
