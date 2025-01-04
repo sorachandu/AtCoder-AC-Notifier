@@ -1,5 +1,5 @@
 from src.get_info.get_atcoder_rating import get_atcoder_username
-from src.get_info.atcoder_problems import read_ac
+from src.get_info.atcoder_problems import read_ac, renew
 import json
 import os
 import random
@@ -26,6 +26,8 @@ def select_problem(min_diff, max_diff, username):
     if ac == None:
         return ("先にregisterコマンドを使用して登録してください")
     
+    renew(username)
+    ac = read_ac(username)
     can_select = dict()
     
     for i in problems:
