@@ -2,11 +2,11 @@ import requests
 import json
 import os
 import time
-from get_atcoder_rating import get_atcoder_rating
+from src.get_info.get_atcoder_rating import get_atcoder_rating, get_atcoder_highest
 
 def get_path(username,filename):
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_dir, "..", "..", "data", username, filename)
+    file_path = os.path.join(current_dir, "..", "..", "data", "users", username, filename)
     return file_path
 
 def get_submissions(user_id, unix_second):
@@ -34,7 +34,7 @@ def select_ac_only(submissions: dict):
 #print(sub)
 
 def write_ac(username, submissions, acs):
-    path = get_path(username, username+"_ac.json")
+    path = get_path(username, "ac.json")
     for submission in submissions:
         if submission not in acs:
             acs[submission] = "AC"
@@ -42,23 +42,27 @@ def write_ac(username, submissions, acs):
         json.dump(acs, f, indent=2)
 
 def read_ac(username):
-    path = get_path(username, username+"_ac.json")
+    path = get_path(username, "ac.json")
+    if os.path.isfile(path) == False:
+        return None
     with open(path) as f:
         ans = json.load(f)
     return ans
 
 
 def write_info(username, unix_second):
-    path = get_path(username, username+"_info.json")
+    path = get_path(username, "info.json")
     ans = {}
     ans["unix_second"] = unix_second
-    ans["rating"] = get_atcoder_rating(username)[0]
-    ans["highest"] = get_atcoder_rating(username)[1]
+    ans["rating"] = get_atcoder_rating(username)
+    ans["highest"] = get_atcoder_highest(username)
     with open(path, "w") as f:
         json.dump(ans, f, indent=2)
 
 def read_info(username):
-    path = get_path(username, username+"_info.json")
+    path = get_path(username, "info.json")
+    if os.path.isfile(path) == False:
+        return None
     with open(path) as f:
         ans = json.load(f)
     return ans

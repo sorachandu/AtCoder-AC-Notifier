@@ -1,37 +1,31 @@
 import discord
-import discord.app_commands
+from discord.ext import commands
 import os
-from ..get_info.get_atcoder_rating import get_atcoder_rating
 
+
+# Botの準備
 intents = discord.Intents.default()
-intents.message_content = True  # これが必要
-token = os.environ["DISCORD_BOT_TOKEN"]
-client = discord.Client(intents=intents)
-tree = discord.app_commands.CommandTree(client) #←ココ
+intents.message_content = True
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-@tree.command(name="rating", description="atcoderのratingを答えます")
-@discord.app_commands.describe(username="atcoderのusername")
-async def rating_command(ctx,username:str):
-    info = get_atcoder_rating(username)
-    if type(info) == str:
-        await ctx.response.send_message(info)
-    else:
-        await ctx.response.send_message(f"{info[2]}のratingは{info[0]}です")
-
-@tree.command(name="highest", description="atcoderのhighestを答えます")
-@discord.app_commands.describe(username="atcoderのusername")
-async def rating_command(ctx,username:str):
-    info = get_atcoder_rating(username)
-    if type(info) == str:
-        await ctx.response.send_message(info)
-    else:
-        await ctx.response.send_message(f"{info[2]}のhighestは{info[1]}です")
-
-    
-
-@client.event
+# Cogを読み込む
+@bot.event
 async def on_ready():
-    await tree.sync()
-    print("ready")
-client.run(token)
+    print(f"Logged in as {bot.user}")
+    cogs_dir = os.path.join(os.path.dirname(__file__), 'cogs')
+    for filename in os.listdir(cogs_dir):
+        if filename.endswith('.py') and filename != '__init__.py':
+            cog_name = f"src.discord_bot.cogs.{filename[:-3]}"
+            try:
+                await bot.load_extension(cog_name)  # cogsフォルダ内のcommand定義ファイルを全部読み込む
+                print(f"Loaded {cog_name}")
+            except Exception as e:
+                print(f"Failed to load {cog_name}: {e}")
+    print("Cogs loaded")
+    # コマンドツリーの同期を行う
+    await bot.tree.sync()
+    print("Commands synced")
+
+# トークンで起動
+bot.run(os.environ["DISCORD_BOT_TOKEN"])
 
